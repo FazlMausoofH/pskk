@@ -19,4 +19,13 @@ class AuthController extends Controller
         }
         return redirect('login')->with('error', 'Emal dan Password salah!');
     }
+    public function logout()
+    {
+        try {
+            Auth::logout();
+            return redirect('login');
+        } catch (\Throwable $th) {
+            return redirect('/')->with('error', $th->getMessage());
+        }
+    }
 }
