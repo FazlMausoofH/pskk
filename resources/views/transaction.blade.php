@@ -5,139 +5,93 @@
 @section('content')
 <div class="p-6 sm:ml-64">
     <div class="relative bg-white overflow-x-auto p-12">
-       <div class="flex justify-between mb-5">
-            <div class="w-full">
-                <div class="p-5 mt-20">
-                    <form action="{{ route('transaction.addProduct') }}" method="GET">
-                        <label for="code_barang" class="text-xl font-semibold">Kode Barang : </label>
-                        <input type="text" name="code_barang" id="code_barang" class="border-2 border-black py-1 p-2" required>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 text-white font-semibold rounded transition duration-300 ease-in-out uppercase py-1.5 px-2 w-20 text-md">Cari</button>
-                    </form>
-                </div>
+        @if (session('success'))
+            <script>
+                alert('{{ session('success') }}');
+            </script>
+        @endif
+
+        @if (session('error'))
+            <script>
+                alert('{{ session('error') }}');
+            </script>
+        @endif
+
+        <form action="{{ route('create-transaction') }}" method="post" class="w-full mx-auto">
+            @csrf
+            <div class="grid grid-cols-4 gap-5 text-white">
+                @foreach ($products as $product)
+                    <div class="border-2 whitespace-nowrap">
+                        <img src="{{ $product->image }}" class="w-full h-40 mb-2" alt="">
+                        <div class="text-center">
+                            <label for="text" class="text-black text-xl">{{ $product->name }} (Rp{{ number_format($product->selling_price, 0, ',', '.') }}) : </label>
+                            <input type="number" name="object[{{ $product->id }}]" class="w-10 text-black border-2 p-1 border-black" min="0" onchange="calculateSubtotal()">
+                        </div>
+                        <span class="selling-price-{{ $product->id }}" style="display: none;">{{ $product->selling_price }}</span>
+                    </div>
+                @endforeach
             </div>
-            <div class="w-2/5">
-                <div class="bg-slate-200 p-5 shadow text-center">
-                    <label class="font-semibold text-2xl">Total Pembelian = <span id="total-pembelian">0</span></label>
-                </div>
-                <div class="flex justify-between p-2 mt-2">
-                    <div>
-                        <label class="text-lg">Nama Pembeli</label>
+            <div class="flex justify-between mt-8">
+                <div class="flex justify-start w-full">
+                    <div class="mr-5">
+                        <label for="" class="text-xl font-semibold">Nama Customer : </label>
+                        <input type="text" name="customer_name" class="border-2 border-black py-1 p-1">
                     </div>
-                    <div>
-                        <span class="mr-2 font-semibold">:</span><input type="text" id="customer-name" class="border-2 border-black py-1">
-                    </div>
-                </div>
-                <div class="flex justify-between p-2 mt-2">
-                    <div>
-                        <label class="text-lg">Total Bayar</label>
-                    </div>
-                    <div>
-                        <span class="mr-2 font-semibold">:</span><input type="number" id="pay-amount" class="border-2 border-black py-1" required>
+                    <div class="mr-5">
+                        <label for="" class="text-xl font-semibold">Nominal Pembayaran : </label>
+                        <input type="text" name="pay" class="border-2 border-black py-1 p-1" onkeyup="formatCurrency(this)">
                     </div>
                 </div>
-                <div class="mt-1">
-                    <button type="button" onclick="saveOrder()" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 text-white font-semibold rounded transition duration-300 ease-in-out uppercase">Bayar</button>
-                </div>
+                <div class="w-1/3">
+                    <button type="submit" class="bg-blue-600 text-white p-3 text-xl hover:bg-blue-700">Bayar Pesanan</button>
+                    <div class="mt-3">
+                        <span class="text-2xl font-semibold">Total : <span class="subtotal">0</span></span>
+                    </div>
+                </div>                
             </div>
-       </div>
-       <div>
-            <table class="w-full text-sm text-center rtl:text-right text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">No</th>
-                        <th scope="col" class="px-6 py-3">Code</th>
-                        <th scope="col" class="px-6 py-3">Name</th>
-                        <th scope="col" class="px-6 py-3">QTY</th>
-                        <th scope="col" class="px-6 py-3">Harga</th>
-                        <th scope="col" class="px-6 py-3">Total</th>
-                        <th scope="col" class="px-6 py-3">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="product-table-body">
-                    @if(session()->has('cart'))
-                        @foreach(session('cart') as $index => $product)
-                            @include('components.product-row', ['product' => $product, 'rowIndex' => $index + 1])
-                        @endforeach
-                    @endif
-                </tbody>                        
-            </table>
-       </div>
+        </form>
     </div>
 </div>
+
 @endsection
 
 @section('scripts')
-    document.addEventListener('DOMContentLoaded', function() {
-        let qtyInputs = document.querySelectorAll('.qty-input');
+        // Fungsi untuk menghitung subtotal setiap kali nilai input berubah
+        function calculateSubtotal() {
+            var total = 0; // Inisialisasi total keseluruhan
 
-        qtyInputs.forEach(function(input) {
-            input.addEventListener('change', function() {
-                updateTotalFromQtyInput(this);
+            // Loop melalui setiap input jumlah barang
+            document.querySelectorAll('input[name^="object"]').forEach(function(input) {
+                var qty = input.value; // Jumlah barang
+                if (qty > 0) {
+                    var productId = input.name.split('[')[1].split(']')[0]; // ID produk dari atribut name input
+                    var sellingPrice = document.querySelector(`.selling-price-${productId}`).innerText; // Harga jual
+
+                    total += qty * sellingPrice; // Menambahkan subtotal dari produk ini ke total keseluruhan
+                }
             });
-        });
-        updateTotalPembelian(); // Call this function to update the total on page load
-    });
 
-    function updateTotalFromQtyInput(input) {
-        let row = input.closest('tr');
-        let qty = parseInt(input.value);
-        let price = parseFloat(row.cells[4].textContent);
-        let totalCell = row.querySelector('.total-cell');
-        let total = qty * price;
-        totalCell.textContent = formatTotal(total);
-        updateTotalPembelian();
-    }
+            // Memformat total menjadi format mata uang Indonesia
+            var formattedTotal = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(total);
 
-    function updateTotalPembelian() {
-        let tableBody = document.getElementById('product-table-body');
-        let total = 0;
-        for (let row of tableBody.rows) {
-            total += parseFloat(row.querySelector('.total-cell').textContent);
+            // Menampilkan total pada elemen subtotal
+            document.querySelector('.subtotal').innerText = formattedTotal;
         }
-        document.getElementById('total-pembelian').textContent = formatTotal(total);
-    }
 
-    function formatTotal(total) {
-        return total.toFixed(0); // Removed decimal places
-    }
+        // Fungsi untuk memformat nominal pembayaran
+        function formatCurrency(input) {
+            // Menghapus karakter selain angka
+            var value = input.value.replace(/\D/g, "");
 
-    function deleteRow(button) {
-        let row = button.closest('tr');
-        let code = row.querySelector('td:nth-child(2)').textContent;
+            // Mengubah angka menjadi format dengan pemisah ribuan
+            var formattedValue = new Intl.NumberFormat("id-ID").format(value);
 
-        fetch("{{ route('transaction.removeProduct') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ code: code })
-        }).then(response => response.json()).then(data => {
-            if (data.success) {
-                row.remove();
-                updateTotalPembelian();
-            }
-        }).catch(error => console.error('Error:', error));
-    }
+            // Menetapkan nilai yang diformat kembali ke input
+            input.value = formattedValue;
+        }
 
-    function saveOrder() {
-        let customerName = document.getElementById('customer-name').value;
-        let payAmount = parseFloat(document.getElementById('pay-amount').value);
-
-        fetch("{{ route('transaction.saveOrder') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ customer_name: customerName, pay: payAmount })
-        }).then(response => response.json()).then(data => {
-            if (data.success) {
-                alert('Order saved successfully');
-                window.location.reload();
-            } else {
-                alert('Failed to save order');
-            }
-        }).catch(error => console.error('Error:', error));
-    }
+        // Event listener untuk setiap input jumlah barang
+        document.querySelectorAll('input[name^="object"]').forEach(function(input) {
+            input.addEventListener('change', calculateSubtotal);
+        });
 @endsection

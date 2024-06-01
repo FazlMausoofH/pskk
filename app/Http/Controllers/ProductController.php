@@ -14,6 +14,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
+        $this->format($products);
         $no = 1;
         return view('product', ['products' => $products, 'no' => $no]);
     }
@@ -74,5 +75,22 @@ class ProductController extends Controller
         $path = $request->file($inputName)->store('public');
         $url = Storage::url($path);
         return $url;
+    }
+    private function format($reports)
+    {
+        // Loop melalui setiap laporan
+        $columnsToFormat = ['selling_price', 'purchase_price'];
+        // Lakukan pencarian berdasarkan rentang tanggal
+        foreach ($reports as $report) {
+            // Loop melalui setiap kolom yang ingin diformat
+            foreach ($columnsToFormat as $column) {
+                // Lakukan pengecekan apakah kolom tersebut ada dalam laporan
+                if (isset($report->{$column})) {
+                    // Ubah format nilai kolom menjadi ribuan
+                    $report->{$column} = number_format($report->{$column}, 0, ',', '.');
+                }
+            }
+        }
+        return $report;
     }
 }

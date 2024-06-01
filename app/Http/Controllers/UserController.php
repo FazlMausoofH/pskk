@@ -15,7 +15,7 @@ class UserController extends Controller
     {
         $users = User::all();
         $no = 1;
-        $headers = ['no','name','email','created_at','action'];
+        $headers = ['no','name','email','phone', 'created_at','action'];
         return view('user', ['users' => $users, 'headers' => $headers, 'no' => $no]);
     }
     public function create(Request $request)

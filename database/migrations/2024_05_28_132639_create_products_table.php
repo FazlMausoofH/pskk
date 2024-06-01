@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code')->default(null)->nullable();
             $table->string('name')->default(null)->nullable();
+            $table->integer('stock')->default(null)->nullable();
             $table->integer('selling_price')->default(null)->nullable();
             $table->integer('purchase_price')->default(null)->nullable();
             $table->string('unit')->default(null)->nullable();

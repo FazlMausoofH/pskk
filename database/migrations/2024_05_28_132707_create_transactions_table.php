@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->longText('detail')->nullable()->default(null);
             $table->string('customer_name')->nullable()->default(null);
-            // $table->string('phone')->nullable()->default(null);
             $table->string('order_id')->nullable()->default(null);
             $table->integer('total')->nullable()->default(null);
             $table->integer('pay')->nullable()->default(null);

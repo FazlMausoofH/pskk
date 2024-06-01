@@ -55,22 +55,16 @@
                                         <input type="text" name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="" required="">
                                     </div>
                                 </div>
-                                <div class="my-2">
-                                    <label for="price" class="block mb-2 text-sm font-medium text-gray-900">Image :</label>
+                                <div class="grid gap-4 mb-4 grid-cols-2">
+                                    <div class="col-span-1">
+                                        <label for="stock" class="block mb-2 text-sm font-medium text-gray-900">Stock</label>
+                                        <input type="text" name="stock" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="" required="">
+                                    </div>
+                                    <div class="my-2">
+                                        <label for="" class="block mb-2 text-sm font-medium text-gray-900">Image :</label>
+                                        <input id="dropzone-file" name="image" type="file" class="" />
+                                    </div>
                                 </div>
-                                <input id="dropzone-file" name="image" type="file" class="" />
-                                {{-- <div class="flex items-center justify-center w-full">
-                                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 ">
-                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                            </svg>
-                                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                            <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                                        </div>
-                                        <input id="dropzone-file" name="image" type="file" class="hidden" />
-                                    </label>
-                                </div>  --}}
                                 <div class="flex justify-end mt-2">
                                     <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                                         Create
@@ -82,7 +76,7 @@
                 </div> 
             </div>
             <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 whitespace-nowrap">
                     <tr>
                         <th scope="col" class="px-6 py-3">
                             No
@@ -104,6 +98,9 @@
                         </th>
                         <th scope="col" class="px-6 py-3">
                             category
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Stock
                         </th>
                         <th scope="col" class="px-6 py-3">
                             image
@@ -139,6 +136,9 @@
                         </td>
                         <td class="px-6 py-4">
                             {{ $product->category }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $product->stock }}
                         </td>
                         <td class="px-6 py-4">
                             <img src="{{ $product->image }}" class="w-10 h-10" alt="">
@@ -196,24 +196,16 @@
                                                     <input type="text" name="category" value="{{ $product->category }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="" required="">
                                                 </div>
                                             </div>
-                                            <div class="my-2">
-                                                <label for="price" class="block mb-2 text-sm font-medium text-gray-900">Image :</label>
-                                            </div>
-                                            <input id="dropzone-file" name="image" value="{{ $product->image }}" type="file" class="" />
-                                            {{-- <div class="flex items-center justify-center w-full">
-                                                <div class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
-                                                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 cursor-pointer">
-                                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                                            </svg>
-                                                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                                            <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                                                        </div>
-                                                        <input id="dropzone-file" name="image" type="file" class="" />
-                                                    </label>
+                                            <div class="grid gap-4 mb-4 grid-cols-2">
+                                                <div class="col-span-1">
+                                                    <label for="stock" class="block mb-2 text-sm font-medium text-gray-900">Stock</label>
+                                                    <input type="text" name="stock" value="{{ $product->stock }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="" required="">
                                                 </div>
-                                            </div> --}}
+                                                <div class="my-2">
+                                                    <label for="" class="block mb-2 text-sm font-medium text-gray-900">Image :</label>
+                                                    <input id="dropzone-file" name="image" value="{{ $product->image }}" type="file" class="" />
+                                                </div>
+                                            </div>
                                             <div class="flex justify-end mt-2">
                                                 <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                                                     Update

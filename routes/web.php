@@ -24,25 +24,22 @@ Route::get('/', function () {
 Route::get('login', [AuthController::class, 'index']);
 Route::post('user-login', [AuthController::class, 'login'])->name('user-login');
 
-Route::middleware(['web', 'second'])->group(function () {
+Route::middleware(['web', 'CheckLogin'])->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index']);
     
+    Route::get('transaction', [TransactionController::class, 'index']);
+    Route::post('transaction/create', [TransactionController::class, 'create'])->name('create-transaction');
+    Route::delete('transaction/delete/{id}', [DashboardController::class, 'delete'])->name('delete-transaction');
+    
+    Route::get('product', [ProductController::class, 'index']);
+    Route::post('product/create', [ProductController::class, 'create'])->name('create-product');
+    Route::put('product/edit/{id}', [ProductController::class, 'edit'])->name('edit-product');
+    Route::delete('product/delete/{id}', [ProductController::class, 'delete'])->name('delete-product');
+    
+    Route::get('user', [UserController::class, 'index']);
+    Route::post('user/create', [UserController::class, 'create'])->name('create-user');
+    Route::put('user/edit/{id}', [UserController::class, 'edit'])->name('edit-user');
+    Route::delete('user/delete/{id}', [UserController::class, 'delete'])->name('delete-user');
+    
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
-Route::get('dashboard', [DashboardController::class, 'index']);
-
-
-Route::get('user', [UserController::class, 'index']);
-Route::post('user/create', [UserController::class, 'create'])->name('create-user');
-Route::put('user/edit/{id}', [UserController::class, 'edit'])->name('edit-user');
-Route::delete('user/delete/{id}', [UserController::class, 'delete'])->name('delete-user');
-
-Route::get('product', [ProductController::class, 'index']);
-Route::post('product/create', [ProductController::class, 'create'])->name('create-product');
-Route::put('product/edit/{id}', [ProductController::class, 'edit'])->name('edit-product');
-Route::delete('product/delete/{id}', [ProductController::class, 'delete'])->name('delete-product');
-
-Route::get('/transaction', [TransactionController::class, 'index'])->name('transaction.index');
-Route::get('/transaction/addProduct', [TransactionController::class, 'addProduct'])->name('transaction.addProduct');
-Route::post('/transaction/removeProduct', [TransactionController::class, 'removeProduct'])->name('transaction.removeProduct');
-Route::post('/transaction/saveOrder', [TransactionController::class, 'saveOrder'])->name('transaction.saveOrder');
-
-Route::post('logout', [AuthController::class, 'logout'])->name('logout');
